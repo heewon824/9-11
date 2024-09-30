@@ -1,1 +1,47 @@
 
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Constants
+acid_concentration = 0.1  # M (몰 농도)
+base_concentration = 0.1  # M
+acid_volume_initial = 50  # ml, 산의 부피
+base_volume_increment = 1  # 매번 추가되는 염기의 부피 (ml)
+
+# Functions
+def calculate_pH(acid_conc, base_conc, acid_vol, base_vol):
+    total_acid = acid_conc * acid_vol  # 산의 몰수
+    total_base = base_conc * base_vol  # 염기의 몰수
+    if total_base < total_acid:  # 아직 산이 남아있을 때
+        remaining_acid = total_acid - total_base
+        new_concentration = remaining_acid / (acid_vol + base_vol)
+        pH = -np.log10(new_concentration)  # 산성
+    elif total_base == total_acid:  # 완전 중화
+        pH = 7.0
+    else:  # 염기가 남아있을 때
+        remaining_base = total_base - total_acid
+        new_concentration = remaining_base / (acid_vol + base_vol)
+        pOH = -np.log10(new_concentration)  # 염기성
+        pH = 14 - pOH
+    return pH
+
+# Data storage
+base_volumes = []
+pH_values = []
+
+# Simulation
+for i in range(51):  # 염기를 최대 50ml까지 추가
+    base_vol = i * base_volume_increment
+    base_volumes.append(base_vol)
+    pH = calculate_pH(acid_concentration, base_concentration, acid_volume_initial, base_vol)
+    pH_values.append(pH)
+
+# Plotting
+plt.plot(base_volumes, pH_values, label='pH curve', color='blue')
+plt.axhline(y=7, color='red', linestyle='--', label='Neutral pH (7)')
+plt.title('Neutralization Reaction pH Curve')
+plt.xlabel('Volume of Base added (ml)')
+plt.ylabel('pH')
+plt.legend()
+plt.grid(True)
+plt.show()
